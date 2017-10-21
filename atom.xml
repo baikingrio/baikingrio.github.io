@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
-  <title>Googol</title>
-  <subtitle>稻草人</subtitle>
+  <title>稻草人</title>
+  <subtitle>大成若缺，其用不弊；大盈若冲，其用不穷。大直若屈，大巧若拙，大辩若诺。躁胜寒，静胜热，清静为天下正。</subtitle>
   <link href="/atom.xml" rel="self"/>
   
-  <link href="http://googol.tech/"/>
+  <link href="http://www.googol.tech/"/>
   <updated>2017-08-24T08:05:58.128Z</updated>
-  <id>http://googol.tech/</id>
+  <id>http://www.googol.tech/</id>
   
   <author>
     <name>稻草人</name>
@@ -17,8 +17,8 @@
   
   <entry>
     <title>Kubernetes Node 安装与配置(Ubuntu系统)</title>
-    <link href="http://googol.tech/2017/08/23/Kubernetes-Node-%E5%AE%89%E8%A3%85%E4%B8%8E%E9%85%8D%E7%BD%AE-Ubuntu%E7%B3%BB%E7%BB%9F/"/>
-    <id>http://googol.tech/2017/08/23/Kubernetes-Node-安装与配置-Ubuntu系统/</id>
+    <link href="http://www.googol.tech/2017/08/23/Kubernetes-Node-%E5%AE%89%E8%A3%85%E4%B8%8E%E9%85%8D%E7%BD%AE-Ubuntu%E7%B3%BB%E7%BB%9F/"/>
+    <id>http://www.googol.tech/2017/08/23/Kubernetes-Node-安装与配置-Ubuntu系统/</id>
     <published>2017-08-23T09:44:08.000Z</published>
     <updated>2017-08-24T08:05:58.128Z</updated>
     
@@ -75,17 +75,17 @@
     
     </summary>
     
-      <category term="Kubernetes" scheme="http://googol.tech/categories/k8s/"/>
+      <category term="Kubernetes" scheme="http://www.googol.tech/categories/k8s/"/>
     
     
   </entry>
   
   <entry>
     <title>GitHub Pages+Hexo搭建博客</title>
-    <link href="http://googol.tech/2017/08/22/GitHub%20Pages+Hexo%E6%90%AD%E5%BB%BA%E5%8D%9A%E5%AE%A2/"/>
-    <id>http://googol.tech/2017/08/22/GitHub Pages+Hexo搭建博客/</id>
+    <link href="http://www.googol.tech/2017/08/22/GitHub%20Pages+Hexo%E6%90%AD%E5%BB%BA%E5%8D%9A%E5%AE%A2/"/>
+    <id>http://www.googol.tech/2017/08/22/GitHub Pages+Hexo搭建博客/</id>
     <published>2017-08-22T06:58:41.000Z</published>
-    <updated>2017-08-24T08:41:08.566Z</updated>
+    <updated>2017-10-20T14:45:02.976Z</updated>
     
     <content type="html"><![CDATA[<p>这篇博客中，主要记录我的个人站点维护过程，内容会不定时更新。</p>
 <h2 id="博客主题"><a href="#博客主题" class="headerlink" title="博客主题"></a>博客主题</h2><p>关于博客的主题也是挑了很久，最终选定Maupassant，主要还是喜欢它的简洁和体积小巧。<br>Maupassant最初是由Cho大神为Typecho平台设计开发的一套响应式模板，体积只有20KB，在各种尺寸的设备上表现出色。</p>
@@ -102,6 +102,8 @@
 &lt;h2 id=&quot;博客主题&quot;&gt;&lt;a href=&quot;#博客主题&quot; class=&quot;headerlink&quot; title=&quot;博客主题&quot;&gt;&lt;/a&gt;博客主题&lt;/h2&gt;&lt;p&gt;关于博客的主题也是挑了很久，最终选定Maupas
     
     </summary>
+    
+      <category term="Hexo" scheme="http://www.googol.tech/categories/hexo/"/>
     
     
   </entry>
