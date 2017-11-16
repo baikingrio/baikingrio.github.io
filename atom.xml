@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://www.googol.tech/"/>
-  <updated>2017-08-24T08:05:58.129Z</updated>
+  <updated>2017-11-16T08:47:16.384Z</updated>
   <id>http://www.googol.tech/</id>
   
   <author>
@@ -14,6 +14,38 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Docker搭建本地镜像仓库</title>
+    <link href="http://www.googol.tech/2017/11/16/Docker%E6%90%AD%E5%BB%BA%E6%9C%AC%E5%9C%B0%E9%95%9C%E5%83%8F%E4%BB%93%E5%BA%93/"/>
+    <id>http://www.googol.tech/2017/11/16/Docker搭建本地镜像仓库/</id>
+    <published>2017-11-16T08:44:00.000Z</published>
+    <updated>2017-11-16T08:47:16.384Z</updated>
+    
+    <content type="html"><![CDATA[<h2 id="下载registry镜像"><a href="#下载registry镜像" class="headerlink" title="下载registry镜像"></a>下载registry镜像</h2><p>docker pull registry</p>
+<h2 id="运行registry容器"><a href="#运行registry容器" class="headerlink" title="运行registry容器"></a>运行registry容器</h2><p>因为是用的容器来做本地镜像仓库的，默认情况下存储的内容是在容器内部的，当容器被删除时，则存放在容器中的镜像也会丢失。<br>所以一般情况下载运行registry容器时，可以使用一个本机目录挂载到容器的/var/lib/registry目录，这样当registry容器删除时，<br>上传到本地镜像仓库的镜像文件就不会随着容器的删除而丢失了。<br>这里我使用的是本机目录/opt/data/bmob-dockerhub</p>
+<p>docker run -d -p 5000:5000 -v /opt/data/bmob-dockerhub:/var/lib/registry –name bmob-dockerhub registry</p>
+<h2 id="测试上传镜像到本地仓库中"><a href="#测试上传镜像到本地仓库中" class="headerlink" title="测试上传镜像到本地仓库中"></a>测试上传镜像到本地仓库中</h2><p>1.首先用一个小镜像来做测试，这里是下载的busybox镜像<br>docker pull busybox</p>
+<p>2.然后打个tag<br>docker tag busybox 192.168.1.13:5000/busybox<br>这里是用192.168.1.13这台机做本地仓库的</p>
+<p>3.push到仓库<br>docker push 192.168.1.13:5000/busybox</p>
+<p>可能遇到的错误：<br>The push refers to a repository [192.168.1.13:5000/busybox]<br>Get <a href="https://192.168.1.13:5000/v2/" target="_blank" rel="external">https://192.168.1.13:5000/v2/</a>: http: server gave HTTP response to HTTPS client</p>
+<p>解决方法：<br>在/etc/docker/daemon.json文件中添加下面一条数据<br>{ “insecure-registries”: [“192.168.1.13:5000”] }<br>然后重启<br>systemctl daemon-reload<br>systemctl restart docker</p>
+<p>将registry容器运行起来，再push就可以成功了</p>
+<h2 id="测试从本地仓库中拉取镜像"><a href="#测试从本地仓库中拉取镜像" class="headerlink" title="测试从本地仓库中拉取镜像"></a>测试从本地仓库中拉取镜像</h2><p>1.先将本机中的busybox镜像和192.168.1.13:5000/busybox镜像删除</p>
+<p>2.拉取镜像<br>docker pull 192.168.1.13:5000/busybox</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;h2 id=&quot;下载registry镜像&quot;&gt;&lt;a href=&quot;#下载registry镜像&quot; class=&quot;headerlink&quot; title=&quot;下载registry镜像&quot;&gt;&lt;/a&gt;下载registry镜像&lt;/h2&gt;&lt;p&gt;docker pull registry&lt;/p&gt;
+&lt;h2 i
+    
+    </summary>
+    
+    
+      <category term="Docker" scheme="http://www.googol.tech/tags/Docker/"/>
+    
+  </entry>
   
   <entry>
     <title>Kubernetes Node 安装与配置(Ubuntu系统)</title>
