@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://www.googol.tech/"/>
-  <updated>2017-11-16T10:04:47.824Z</updated>
+  <updated>2017-11-16T10:24:26.392Z</updated>
   <id>http://www.googol.tech/</id>
   
   <author>
@@ -14,6 +14,55 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>CentOS 7系统安装</title>
+    <link href="http://www.googol.tech/2017/11/16/CentOS-7%E7%B3%BB%E7%BB%9F%E5%AE%89%E8%A3%85/"/>
+    <id>http://www.googol.tech/2017/11/16/CentOS-7系统安装/</id>
+    <published>2017-11-16T10:18:00.000Z</published>
+    <updated>2017-11-16T10:24:26.392Z</updated>
+    
+    <content type="html"><![CDATA[<h3 id="制作U盘镜像"><a href="#制作U盘镜像" class="headerlink" title="制作U盘镜像"></a>制作U盘镜像</h3><h4 id="1-下载cengos-iso镜像文件"><a href="#1-下载cengos-iso镜像文件" class="headerlink" title="1.下载cengos iso镜像文件"></a>1.下载cengos iso镜像文件</h4><p>使用阿里提供的国内下载地址<br><a href="http://mirrors.aliyun.com/centos/" target="_blank" rel="external">http://mirrors.aliyun.com/centos/</a><br>这里选择的是如下版本<br><a href="http://mirrors.aliyun.com/centos/7/isos/x86_64/CentOS-7-x86_64-DVD-1708.iso" target="_blank" rel="external">http://mirrors.aliyun.com/centos/7/isos/x86_64/CentOS-7-x86_64-DVD-1708.iso</a> </p>
+<h4 id="2-使用UltraISO工具刻录到U盘"><a href="#2-使用UltraISO工具刻录到U盘" class="headerlink" title="2.使用UltraISO工具刻录到U盘"></a>2.使用UltraISO工具刻录到U盘</h4><p>U盘大小要求8G以上<br>工具的使用方法参考百度经验：<a href="http://jingyan.baidu.com/article/363872ec8b4f6a6e4ba16f2b.html" target="_blank" rel="external">http://jingyan.baidu.com/article/363872ec8b4f6a6e4ba16f2b.html</a></p>
+<h3 id="设置Boot从U盘启动"><a href="#设置Boot从U盘启动" class="headerlink" title="设置Boot从U盘启动"></a>设置Boot从U盘启动</h3><p>启动是进入Boot模式选择U盘启动<br>然后参照如下几个教程进行系统安装：<br><a href="http://linux.it.net.cn/CentOS/fast/2016/1229/25698.html" target="_blank" rel="external">http://linux.it.net.cn/CentOS/fast/2016/1229/25698.html</a><br><a href="https://www.xiariboke.com/computer/3625.html" target="_blank" rel="external">https://www.xiariboke.com/computer/3625.html</a><br><a href="https://micorochio.github.io/2017/01/14/add-centos-to-win10/" target="_blank" rel="external">https://micorochio.github.io/2017/01/14/add-centos-to-win10/</a></p>
+<h3 id="没有ifconfig命令的解决办法"><a href="#没有ifconfig命令的解决办法" class="headerlink" title="没有ifconfig命令的解决办法"></a>没有ifconfig命令的解决办法</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">yum search ifconfig</div><div class="line">yum install net-tools.x86_64</div></pre></td></tr></table></figure>
+<h3 id="可能遇到的一些问题"><a href="#可能遇到的一些问题" class="headerlink" title="可能遇到的一些问题"></a>可能遇到的一些问题</h3><ul>
+<li>使用yum 命令是遇到Could not retrieve mirrorlist <a href="http://mirrorlist.centos.org/相关错误" target="_blank" rel="external">http://mirrorlist.centos.org/相关错误</a></li>
+</ul>
+<p>解决办法：<br>修改/etc/sysconfig/network-scripts/ifcfg-xxx文件中的如下两项内容<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">ONBOOT=yes</div><div class="line">MM_CONTROLLED=no</div></pre></td></tr></table></figure></p>
+<p>修改完成后台重启</p>
+<h3 id="设置静态IP"><a href="#设置静态IP" class="headerlink" title="设置静态IP"></a>设置静态IP</h3><p>1.修改网卡配置<br>vi /etc/sysconfig/network-scripts/ifcfg-xxx xxx是具体的网卡名称，不同的机器安装os后的可能不一样，按实际情况修改成自己的网卡名称<br>将ifcfg-xxx的内容修改如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">TYPE=Ethernet</div><div class="line">NAME=enp2s0</div><div class="line">DEVICE=enp2s0</div><div class="line">BOOTPROTO=static</div><div class="line">BROADCAST=192.168.1.255</div><div class="line">UUID=b1800d7d-b58e-4fcb-a109-1b12068227e3</div><div class="line">IPADDR=192.168.1.11</div><div class="line">IPV6INIT=no</div><div class="line">IPV6_AUTOCONF=no</div><div class="line">NETMASK=255.255.255.0</div><div class="line">NETWORK=192.168.1.1</div><div class="line">ONBOOT=yes</div></pre></td></tr></table></figure></p>
+<p>每项解释如下：<br>DEVICE=eth0 #描述网卡对应的设备别名<br>HWADDR=00:07:E9:05:E8:B4 #对应的网卡网卡地址,即mac地址<br>TYPE=Ethernet#表示网络类型是以太网<br>UUID：网卡的UUID（文件里可以没有）<br>ONBOOT=yes#系统启动时自动加载eth0<br>NM_CONTROLLED=yes#设备是否被NetworkManager管理<br>BOOTPROTO=static#通过不同协议设置网卡获得ip地址的方式,–静态static –bootp –dhcp<br>IPADDR=192.168.1.11#设置网卡IP地址<br>NETMASK=255.255.255.0#设置网卡掩码地址<br>NETWORK=192.168.1.1#设置网卡对应的网络地址<br>BROADCAST=192.168.1.255#设置网卡对应网络的广播地址</p>
+<p>2.修改网关配置<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">vi /etc/sysconfig/network</div></pre></td></tr></table></figure></p>
+<p>添加如下内容<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">GATEWAY=192.168.1.1</div></pre></td></tr></table></figure></p>
+<p>3.修改DNS<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">vi /etc/resolv.conf</div></pre></td></tr></table></figure></p>
+<p>添加两个dns<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">nameserver 8.8.8.8</div><div class="line">nameserver 114.114.114.114</div></pre></td></tr></table></figure></p>
+<p>4.重启网络服务<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">service network restart</div></pre></td></tr></table></figure></p>
+<p>5.在另一台机器上验证是否可以ping通<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">ping 192.168.1.11</div></pre></td></tr></table></figure></p>
+<h3 id="安装wget"><a href="#安装wget" class="headerlink" title="安装wget"></a>安装wget</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">yum -y install wget </div><div class="line">yum -y install setup </div><div class="line">yum -y install perl</div></pre></td></tr></table></figure>
+<p>如果出现GCC..相关错误，则需要先安装GCC</p>
+<p>将gcc和make一起装好<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">yum install gcc make</div></pre></td></tr></table></figure></p>
+<h3 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h3><p>1.查看端口占用情况<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">netstat -ntlp</div></pre></td></tr></table></figure></p>
+<h4 id="关闭防火墙"><a href="#关闭防火墙" class="headerlink" title="关闭防火墙"></a>关闭防火墙</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">systemctl stop firewalld.service #停止firewall</div><div class="line"></div><div class="line">systemctl disable firewalld.service #禁止firewall开机启动</div></pre></td></tr></table></figure>
+<p>重启后生效</p>
+<h4 id="关闭SELinux"><a href="#关闭SELinux" class="headerlink" title="关闭SELinux"></a>关闭SELinux</h4><ul>
+<li><p>永久有效<br>修改 /etc/selinux/config 文件中的 SELINUX=”” 为 disabled ，然后重启。</p>
+</li>
+<li><p>即时生效</p>
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">setenforce 0</div></pre></td></tr></table></figure>]]></content>
+    
+    <summary type="html">
+    
+      &lt;h3 id=&quot;制作U盘镜像&quot;&gt;&lt;a href=&quot;#制作U盘镜像&quot; class=&quot;headerlink&quot; title=&quot;制作U盘镜像&quot;&gt;&lt;/a&gt;制作U盘镜像&lt;/h3&gt;&lt;h4 id=&quot;1-下载cengos-iso镜像文件&quot;&gt;&lt;a href=&quot;#1-下载cengos-iso镜像文件&quot;
+    
+    </summary>
+    
+    
+      <category term="CentOS" scheme="http://www.googol.tech/tags/CentOS/"/>
+    
+  </entry>
   
   <entry>
     <title>CentOS 7安装Jenkins</title>
