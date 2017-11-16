@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://www.googol.tech/"/>
-  <updated>2017-11-16T08:47:16.384Z</updated>
+  <updated>2017-11-16T10:04:47.824Z</updated>
   <id>http://www.googol.tech/</id>
   
   <author>
@@ -16,31 +16,123 @@
   <generator uri="http://hexo.io/">Hexo</generator>
   
   <entry>
-    <title>Docker搭建本地镜像仓库</title>
-    <link href="http://www.googol.tech/2017/11/16/Docker%E6%90%AD%E5%BB%BA%E6%9C%AC%E5%9C%B0%E9%95%9C%E5%83%8F%E4%BB%93%E5%BA%93/"/>
-    <id>http://www.googol.tech/2017/11/16/Docker搭建本地镜像仓库/</id>
-    <published>2017-11-16T08:44:00.000Z</published>
-    <updated>2017-11-16T08:47:16.384Z</updated>
+    <title>CentOS 7安装Jenkins</title>
+    <link href="http://www.googol.tech/2017/11/16/CentOS-7%E5%AE%89%E8%A3%85Jenkins/"/>
+    <id>http://www.googol.tech/2017/11/16/CentOS-7安装Jenkins/</id>
+    <published>2017-11-16T09:52:00.000Z</published>
+    <updated>2017-11-16T10:04:47.824Z</updated>
     
-    <content type="html"><![CDATA[<h2 id="下载registry镜像"><a href="#下载registry镜像" class="headerlink" title="下载registry镜像"></a>下载registry镜像</h2><p>docker pull registry</p>
-<h2 id="运行registry容器"><a href="#运行registry容器" class="headerlink" title="运行registry容器"></a>运行registry容器</h2><p>因为是用的容器来做本地镜像仓库的，默认情况下存储的内容是在容器内部的，当容器被删除时，则存放在容器中的镜像也会丢失。<br>所以一般情况下载运行registry容器时，可以使用一个本机目录挂载到容器的/var/lib/registry目录，这样当registry容器删除时，<br>上传到本地镜像仓库的镜像文件就不会随着容器的删除而丢失了。<br>这里我使用的是本机目录/opt/data/bmob-dockerhub</p>
-<p>docker run -d -p 5000:5000 -v /opt/data/bmob-dockerhub:/var/lib/registry –name bmob-dockerhub registry</p>
-<h2 id="测试上传镜像到本地仓库中"><a href="#测试上传镜像到本地仓库中" class="headerlink" title="测试上传镜像到本地仓库中"></a>测试上传镜像到本地仓库中</h2><p>1.首先用一个小镜像来做测试，这里是下载的busybox镜像<br>docker pull busybox</p>
-<p>2.然后打个tag<br>docker tag busybox 192.168.1.13:5000/busybox<br>这里是用192.168.1.13这台机做本地仓库的</p>
-<p>3.push到仓库<br>docker push 192.168.1.13:5000/busybox</p>
-<p>可能遇到的错误：<br>The push refers to a repository [192.168.1.13:5000/busybox]<br>Get <a href="https://192.168.1.13:5000/v2/" target="_blank" rel="external">https://192.168.1.13:5000/v2/</a>: http: server gave HTTP response to HTTPS client</p>
-<p>解决方法：<br>在/etc/docker/daemon.json文件中添加下面一条数据<br>{ “insecure-registries”: [“192.168.1.13:5000”] }<br>然后重启<br>systemctl daemon-reload<br>systemctl restart docker</p>
-<p>将registry容器运行起来，再push就可以成功了</p>
-<h2 id="测试从本地仓库中拉取镜像"><a href="#测试从本地仓库中拉取镜像" class="headerlink" title="测试从本地仓库中拉取镜像"></a>测试从本地仓库中拉取镜像</h2><p>1.先将本机中的busybox镜像和192.168.1.13:5000/busybox镜像删除</p>
-<p>2.拉取镜像<br>docker pull 192.168.1.13:5000/busybox</p>
+    <content type="html"><![CDATA[<h3 id="查看Jenkinsg最新稳定版"><a href="#查看Jenkinsg最新稳定版" class="headerlink" title="查看Jenkinsg最新稳定版"></a>查看Jenkinsg最新稳定版</h3><p><a href="https://pkg.jenkins.io/redhat-stable/" target="_blank" rel="external">https://pkg.jenkins.io/redhat-stable/</a></p>
+<h3 id="yum-方式安装"><a href="#yum-方式安装" class="headerlink" title="yum 方式安装"></a>yum 方式安装</h3><p>1.下载依赖<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo wget -O /etc/yum.repos.d/jenkins.repo https://pkg.jenkins.io/redhat-stable/jenkins.repo</div></pre></td></tr></table></figure></p>
+<p>2.导入秘钥<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo rpm --import https://pkg.jenkins.io/redhat-stable/jenkins.io.key</div></pre></td></tr></table></figure></p>
+<p>3.安装<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">yum install jenkins</div></pre></td></tr></table></figure></p>
+<h3 id="查看jenkins安装路径"><a href="#查看jenkins安装路径" class="headerlink" title="查看jenkins安装路径"></a>查看jenkins安装路径</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">rpm -ql jenkins</div><div class="line"></div><div class="line">/etc/init.d/jenkins</div><div class="line">/etc/logrotate.d/jenkins</div><div class="line">/etc/sysconfig/jenkins</div><div class="line">/usr/lib/jenkins</div><div class="line">/usr/lib/jenkins/jenkins.war</div><div class="line">/usr/sbin/rcjenkins</div><div class="line">/var/cache/jenkins</div><div class="line">/var/lib/jenkins</div><div class="line">/var/log/jenkins</div></pre></td></tr></table></figure>
+<p>/usr/lib/jenkins/：jenkins安装目录，war包会放在这里。<br>/etc/sysconfig/jenkins：jenkins配置文件，“端口”，“JENKINS_HOME”等都可以在这里配置。<br>/var/lib/jenkins/：默认的JENKINS_HOME。<br>/var/log/jenkins/jenkins.log：jenkins日志文件。</p>
+<h3 id="启动-停止"><a href="#启动-停止" class="headerlink" title="启动/停止"></a>启动/停止</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">sudo service jenkins start/stop/restart</div><div class="line">sudo chkconfig jenkins on</div></pre></td></tr></table></figure>
+<p>查看jenkins状态<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">systemctl status jenkins</div></pre></td></tr></table></figure></p>
+<h3 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h3><p>将jenkins用户添加进docker用户组<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">sudo usermod -aG docker jenkins</div><div class="line">sudo systemctl restart jenkins</div></pre></td></tr></table></figure></p>
 ]]></content>
     
     <summary type="html">
     
-      &lt;h2 id=&quot;下载registry镜像&quot;&gt;&lt;a href=&quot;#下载registry镜像&quot; class=&quot;headerlink&quot; title=&quot;下载registry镜像&quot;&gt;&lt;/a&gt;下载registry镜像&lt;/h2&gt;&lt;p&gt;docker pull registry&lt;/p&gt;
-&lt;h2 i
+      &lt;h3 id=&quot;查看Jenkinsg最新稳定版&quot;&gt;&lt;a href=&quot;#查看Jenkinsg最新稳定版&quot; class=&quot;headerlink&quot; title=&quot;查看Jenkinsg最新稳定版&quot;&gt;&lt;/a&gt;查看Jenkinsg最新稳定版&lt;/h3&gt;&lt;p&gt;&lt;a href=&quot;https://p
     
     </summary>
+    
+      <category term="Jenkins" scheme="http://www.googol.tech/categories/Jenkins/"/>
+    
+    
+      <category term="CentOS" scheme="http://www.googol.tech/tags/CentOS/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>CentOS 7安装Docker</title>
+    <link href="http://www.googol.tech/2017/11/16/CentOS-7%E5%AE%89%E8%A3%85Docker/"/>
+    <id>http://www.googol.tech/2017/11/16/CentOS-7安装Docker/</id>
+    <published>2017-11-16T09:49:00.000Z</published>
+    <updated>2017-11-16T10:03:53.174Z</updated>
+    
+    <content type="html"><![CDATA[<h3 id="检查内核版本"><a href="#检查内核版本" class="headerlink" title="检查内核版本"></a>检查内核版本</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">uname -r</div></pre></td></tr></table></figure>
+<p><strong>docker需要的内核版本是3.10</strong></p>
+<h3 id="更新yum包"><a href="#更新yum包" class="headerlink" title="更新yum包"></a>更新yum包</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo yum update</div></pre></td></tr></table></figure>
+<h3 id="rpm-方式安装"><a href="#rpm-方式安装" class="headerlink" title="rpm 方式安装"></a>rpm 方式安装</h3><h4 id="下载rpm包"><a href="#下载rpm包" class="headerlink" title="下载rpm包"></a>下载rpm包</h4><p>到<a href="https://download.docker.com/linux/centos/7/x86_64/stable/Packages/下载对应的.rpm文件" target="_blank" rel="external">https://download.docker.com/linux/centos/7/x86_64/stable/Packages/下载对应的.rpm文件</a><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">curl -O -sSL https://download.docker.com/linux/centos/7/x86_64/stable/Packages/docker-ce-17.06.0.ce-1.el7.centos.x86_64.rpm</div></pre></td></tr></table></figure></p>
+<h4 id="安装rpm包"><a href="#安装rpm包" class="headerlink" title="安装rpm包"></a>安装rpm包</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo yum localinstall --nogpgcheck docker-ce-17.06.0.ce-1.el7.centos.x86_64.rpm</div></pre></td></tr></table></figure>
+<h3 id="启动Docker服务"><a href="#启动Docker服务" class="headerlink" title="启动Docker服务"></a>启动Docker服务</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">// 设置开机启动</div><div class="line">sudo systemctl enable docker</div><div class="line">// 启动docker</div><div class="line">sudo systemctl start docker</div></pre></td></tr></table></figure>
+<h3 id="验证Docker"><a href="#验证Docker" class="headerlink" title="验证Docker"></a>验证Docker</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo docker run hell-world</div></pre></td></tr></table></figure>
+<h3 id="使用Docker加速器"><a href="#使用Docker加速器" class="headerlink" title="使用Docker加速器"></a>使用Docker加速器</h3><p>因为国内的原因，可以使用加速器，这样在下载镜像时会比较快。<br>针对Docker客户端版本大于1.10的用户，可以通过修改daemon配置文件/etc/docker/daemon.json来使用加速器：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">sudo mkdir -p /etc/docker</div><div class="line">sudo tee /etc/docker/daemon.json &lt;&lt;-&apos;EOF&apos;</div><div class="line">&#123;</div><div class="line">  &quot;registry-mirrors&quot;: [&quot;https://xxxxxxx.mirror.aliyuncs.com&quot;]</div><div class="line">&#125;</div><div class="line">EOF</div><div class="line">sudo systemctl daemon-reload</div><div class="line">sudo systemctl restart docker</div></pre></td></tr></table></figure></p>
+<p>以上是使用的阿里云提供的加速器，给每个用户提供的地址都不一样，可更改为自己的。</p>
+<h3 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h3><p>有时centos 中的docker启动会出错，和存储相关的错误，可以在/etc/docker/daemon.json文件中添加”storage-driver”: “devicemapper”，然后重启即可。</p>
+<h3 id="Docker清理"><a href="#Docker清理" class="headerlink" title="Docker清理"></a>Docker清理</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"># 杀死所有正在运行的容器</div><div class="line">docker kill $(docker ps -a -q)</div><div class="line"># 删除所有已经停止的容器</div><div class="line">docker rm $(docker ps -a -q)</div><div class="line"># 删除所有未打 dangling 标签的镜像</div><div class="line">docker rmi $(docker images -q -f dangling=true)</div><div class="line"># 删除所有镜像</div><div class="line">docker rmi $(docker images -q)</div></pre></td></tr></table></figure>
+<h3 id="卸载旧的docker和依赖包"><a href="#卸载旧的docker和依赖包" class="headerlink" title="卸载旧的docker和依赖包"></a>卸载旧的docker和依赖包</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">sudo yum remove docker \</div><div class="line">	  docker-common \</div><div class="line">	  container-selinux \</div><div class="line">	  docker-selinux \</div><div class="line">	  docker-engine</div></pre></td></tr></table></figure>
+<h3 id="卸载Docker-CE"><a href="#卸载Docker-CE" class="headerlink" title="卸载Docker CE"></a>卸载Docker CE</h3><p>1.<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo yum remove docker-ce</div></pre></td></tr></table></figure></p>
+<p>Note：镜像，容器，卷和配置文件不是被自动移除的，需要手动删除</p>
+<p>2.删除所有的配置<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo rm -rf /var/lib/docker</div></pre></td></tr></table></figure></p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;h3 id=&quot;检查内核版本&quot;&gt;&lt;a href=&quot;#检查内核版本&quot; class=&quot;headerlink&quot; title=&quot;检查内核版本&quot;&gt;&lt;/a&gt;检查内核版本&lt;/h3&gt;&lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gut
+    
+    </summary>
+    
+      <category term="Docker" scheme="http://www.googol.tech/categories/Docker/"/>
+    
+    
+      <category term="CentOS" scheme="http://www.googol.tech/tags/CentOS/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>CentOS 7安装JDK</title>
+    <link href="http://www.googol.tech/2017/11/16/CentOS-7%E5%AE%89%E8%A3%85JDK/"/>
+    <id>http://www.googol.tech/2017/11/16/CentOS-7安装JDK/</id>
+    <published>2017-11-16T09:46:00.000Z</published>
+    <updated>2017-11-16T10:00:12.045Z</updated>
+    
+    <content type="html"><![CDATA[<h3 id="yum-方式安装JDK"><a href="#yum-方式安装JDK" class="headerlink" title="yum 方式安装JDK"></a>yum 方式安装JDK</h3><h4 id="1-首先查看JDK软件包列表"><a href="#1-首先查看JDK软件包列表" class="headerlink" title="1.首先查看JDK软件包列表"></a>1.首先查看JDK软件包列表</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div></pre></td><td class="code"><pre><div class="line">yum search java | grep -i --color JDK</div><div class="line"></div><div class="line">ldapjdk-javadoc.noarch : Javadoc for ldapjdk</div><div class="line">icedtea-web.x86_64 : Additional Java components for OpenJDK - Java browser</div><div class="line">java-1.6.0-openjdk.x86_64 : OpenJDK Runtime Environment</div><div class="line">java-1.6.0-openjdk-demo.x86_64 : OpenJDK Demos</div><div class="line">java-1.6.0-openjdk-devel.x86_64 : OpenJDK Development Environment</div><div class="line">java-1.6.0-openjdk-javadoc.x86_64 : OpenJDK API Documentation</div><div class="line">java-1.6.0-openjdk-src.x86_64 : OpenJDK Source Bundle</div><div class="line">java-1.7.0-openjdk.x86_64 : OpenJDK Runtime Environment</div><div class="line">java-1.7.0-openjdk-accessibility.x86_64 : OpenJDK accessibility connector</div><div class="line">java-1.7.0-openjdk-demo.x86_64 : OpenJDK Demos</div><div class="line">java-1.7.0-openjdk-devel.x86_64 : OpenJDK Development Environment</div><div class="line">java-1.7.0-openjdk-headless.x86_64 : The OpenJDK runtime environment without</div><div class="line">java-1.7.0-openjdk-javadoc.noarch : OpenJDK API Documentation</div><div class="line">java-1.7.0-openjdk-src.x86_64 : OpenJDK Source Bundle</div><div class="line">java-1.8.0-openjdk.i686 : OpenJDK Runtime Environment</div><div class="line">java-1.8.0-openjdk.x86_64 : OpenJDK Runtime Environment</div><div class="line">java-1.8.0-openjdk-accessibility.i686 : OpenJDK accessibility connector</div><div class="line">java-1.8.0-openjdk-accessibility.x86_64 : OpenJDK accessibility connector</div><div class="line">java-1.8.0-openjdk-accessibility-debug.i686 : OpenJDK accessibility connector</div><div class="line">java-1.8.0-openjdk-accessibility-debug.x86_64 : OpenJDK accessibility connector</div><div class="line">java-1.8.0-openjdk-debug.i686 : OpenJDK Runtime Environment with full debug on</div><div class="line">java-1.8.0-openjdk-debug.x86_64 : OpenJDK Runtime Environment with full debug on</div><div class="line">java-1.8.0-openjdk-demo.i686 : OpenJDK Demos</div><div class="line">java-1.8.0-openjdk-demo.x86_64 : OpenJDK Demos</div><div class="line">java-1.8.0-openjdk-demo-debug.i686 : OpenJDK Demos with full debug on</div><div class="line">java-1.8.0-openjdk-demo-debug.x86_64 : OpenJDK Demos with full debug on</div><div class="line">java-1.8.0-openjdk-devel.i686 : OpenJDK Development Environment</div><div class="line">java-1.8.0-openjdk-devel.x86_64 : OpenJDK Development Environment</div><div class="line">java-1.8.0-openjdk-devel-debug.i686 : OpenJDK Development Environment with full</div><div class="line">java-1.8.0-openjdk-devel-debug.x86_64 : OpenJDK Development Environment with</div><div class="line">java-1.8.0-openjdk-headless.i686 : OpenJDK Runtime Environment</div><div class="line">java-1.8.0-openjdk-headless.x86_64 : OpenJDK Runtime Environment</div><div class="line">java-1.8.0-openjdk-headless-debug.i686 : OpenJDK Runtime Environment with full</div><div class="line">java-1.8.0-openjdk-headless-debug.x86_64 : OpenJDK Runtime Environment with full</div><div class="line">java-1.8.0-openjdk-javadoc.noarch : OpenJDK API Documentation</div><div class="line">java-1.8.0-openjdk-javadoc-debug.noarch : OpenJDK API Documentation for packages</div><div class="line">java-1.8.0-openjdk-javadoc-zip.noarch : OpenJDK API Documentation compressed in</div><div class="line">java-1.8.0-openjdk-javadoc-zip-debug.noarch : OpenJDK API Documentation</div><div class="line">java-1.8.0-openjdk-src.i686 : OpenJDK Source Bundle</div><div class="line">java-1.8.0-openjdk-src.x86_64 : OpenJDK Source Bundle</div><div class="line">java-1.8.0-openjdk-src-debug.i686 : OpenJDK Source Bundle for packages with</div><div class="line">java-1.8.0-openjdk-src-debug.x86_64 : OpenJDK Source Bundle for packages with</div><div class="line">ldapjdk.noarch : The Mozilla LDAP Java SDK</div></pre></td></tr></table></figure>
+<p>然后选择需要的版本安装，这里我选择java-1.8.0-openjdk.x86_64进行安装</p>
+<h4 id="2-安装"><a href="#2-安装" class="headerlink" title="2.安装"></a>2.安装</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">yum install java-1.8.0-openjdk.x86_64</div><div class="line">yum install java-1.8.0-openjdk-devel.x86_64</div></pre></td></tr></table></figure>
+<h4 id="3-验证验证是否成功"><a href="#3-验证验证是否成功" class="headerlink" title="3.验证验证是否成功"></a>3.验证验证是否成功</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">java -version</div><div class="line"></div><div class="line">openjdk version &quot;1.8.0_144&quot;</div><div class="line">OpenJDK Runtime Environment (build 1.8.0_144-b01)</div><div class="line">OpenJDK 64-Bit Server VM (build 25.144-b01, mixed mode)</div></pre></td></tr></table></figure>]]></content>
+    
+    <summary type="html">
+    
+      &lt;h3 id=&quot;yum-方式安装JDK&quot;&gt;&lt;a href=&quot;#yum-方式安装JDK&quot; class=&quot;headerlink&quot; title=&quot;yum 方式安装JDK&quot;&gt;&lt;/a&gt;yum 方式安装JDK&lt;/h3&gt;&lt;h4 id=&quot;1-首先查看JDK软件包列表&quot;&gt;&lt;a href=&quot;#1-首
+    
+    </summary>
+    
+    
+      <category term="CentOS" scheme="http://www.googol.tech/tags/CentOS/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Docker搭建本地镜像仓库</title>
+    <link href="http://www.googol.tech/2017/11/16/Docker%E6%90%AD%E5%BB%BA%E6%9C%AC%E5%9C%B0%E9%95%9C%E5%83%8F%E4%BB%93%E5%BA%93/"/>
+    <id>http://www.googol.tech/2017/11/16/Docker搭建本地镜像仓库/</id>
+    <published>2017-11-16T08:44:00.000Z</published>
+    <updated>2017-11-16T10:02:03.016Z</updated>
+    
+    <content type="html"><![CDATA[<h3 id="下载registry镜像"><a href="#下载registry镜像" class="headerlink" title="下载registry镜像"></a>下载registry镜像</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">docker pull registry</div></pre></td></tr></table></figure>
+<h3 id="运行registry容器"><a href="#运行registry容器" class="headerlink" title="运行registry容器"></a>运行registry容器</h3><p>因为是用的容器来做本地镜像仓库的，默认情况下存储的内容是在容器内部的，当容器被删除时，则存放在容器中的镜像也会丢失。<br>所以一般情况下载运行registry容器时，可以使用一个本机目录挂载到容器的/var/lib/registry目录，这样当registry容器删除时，<br>上传到本地镜像仓库的镜像文件就不会随着容器的删除而丢失了。<br>这里我使用的是本机目录/opt/data/bmob-dockerhub<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">docker run -d -p 5000:5000 -v /opt/data/bmob-dockerhub:/var/lib/registry --name bmob-dockerhub registry</div></pre></td></tr></table></figure></p>
+<h3 id="测试上传镜像到本地仓库中"><a href="#测试上传镜像到本地仓库中" class="headerlink" title="测试上传镜像到本地仓库中"></a>测试上传镜像到本地仓库中</h3><p>1.首先用一个小镜像来做测试，这里是下载的busybox镜像<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">docker pull busybox</div></pre></td></tr></table></figure></p>
+<p>2.然后打个tag<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">docker tag busybox 192.168.1.13:5000/busybox</div></pre></td></tr></table></figure></p>
+<p>这里是用192.168.1.13这台机做本地仓库的</p>
+<p>3.push到仓库<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">docker push 192.168.1.13:5000/busybox</div></pre></td></tr></table></figure></p>
+<p>可能遇到的错误：<br>The push refers to a repository [192.168.1.13:5000/busybox]<br>Get <a href="https://192.168.1.13:5000/v2/" target="_blank" rel="external">https://192.168.1.13:5000/v2/</a>: http: server gave HTTP response to HTTPS client</p>
+<p>解决方法：<br>在/etc/docker/daemon.json文件中添加下面一条数据<br>{ “insecure-registries”: [“192.168.1.13:5000”] }<br>然后重启<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">systemctl daemon-reload</div><div class="line">systemctl restart docker</div></pre></td></tr></table></figure></p>
+<p>将registry容器运行起来，再push就可以成功了</p>
+<h3 id="测试从本地仓库中拉取镜像"><a href="#测试从本地仓库中拉取镜像" class="headerlink" title="测试从本地仓库中拉取镜像"></a>测试从本地仓库中拉取镜像</h3><p>1.先将本机中的busybox镜像和192.168.1.13:5000/busybox镜像删除</p>
+<p>2.拉取镜像<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">docker pull 192.168.1.13:5000/busybox</div></pre></td></tr></table></figure></p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;h3 id=&quot;下载registry镜像&quot;&gt;&lt;a href=&quot;#下载registry镜像&quot; class=&quot;headerlink&quot; title=&quot;下载registry镜像&quot;&gt;&lt;/a&gt;下载registry镜像&lt;/h3&gt;&lt;figure class=&quot;highlight plain&quot;&gt;&lt;
+    
+    </summary>
+    
+      <category term="Docker" scheme="http://www.googol.tech/categories/Docker/"/>
     
     
       <category term="Docker" scheme="http://www.googol.tech/tags/Docker/"/>
