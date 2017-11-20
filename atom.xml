@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://www.googol.tech/"/>
-  <updated>2017-11-16T10:24:26.392Z</updated>
+  <updated>2017-11-20T08:10:53.659Z</updated>
   <id>http://www.googol.tech/</id>
   
   <author>
@@ -14,6 +14,51 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>SpringBoot消费BmobAPI</title>
+    <link href="http://www.googol.tech/2017/11/17/SpringBoot%E6%B6%88%E8%B4%B9BmobAPI/"/>
+    <id>http://www.googol.tech/2017/11/17/SpringBoot消费BmobAPI/</id>
+    <published>2017-11-17T02:51:00.000Z</published>
+    <updated>2017-11-20T08:10:53.659Z</updated>
+    
+    <content type="html"><![CDATA[<p>在大部分的情况下，使用客户端开发时调用Bmob的服务是比较常见的，比如开发Android、iOS应用程序等等。这样做能够直接省去服务端开发该做的事情，一方面降低了开发成本，另一方面也提高了客户端开发的速度，对于开发人员来说真的是一树百获啊。</p>
+<p>上面说的这些大家不要认为是在打广告或是写软文，其实纯粹就是一个普通使用者对一个产品使用后的真实感受的表达，如果你非要这样认为，就怪程序员不太会用社会语言写文章吧。好了，还是少解释，咱们坐下来开始聊代码吧。</p>
+<h3 id="使用到的资源"><a href="#使用到的资源" class="headerlink" title="使用到的资源"></a>使用到的资源</h3><ul>
+<li>BmobRestfulAPI文档<br><a href="BmobRestfulAPI文档">https://docs.bmob.cn/data/Restful/b_developdoc/doc/index.html</a></li>
+</ul>
+<h3 id="SpringBoot项目"><a href="#SpringBoot项目" class="headerlink" title="SpringBoot项目"></a>SpringBoot项目</h3><p>本来是想从创建SpringBoot项目开始讲的，想想还是算了(主要是懒)，因为基本都是IDEA的步骤说明，都是截图，其实都不是这篇文章的重点。所以，这里就主要说明一下项目所使用的内裤有哪些，项目是由maven构建的，pom.xml文件中dependencies部分具体配置如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line">&lt;dependencies&gt;</div><div class="line">		&lt;dependency&gt;</div><div class="line">			&lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;</div><div class="line">			&lt;artifactId&gt;spring-boot-starter-web&lt;/artifactId&gt;</div><div class="line">		&lt;/dependency&gt;</div><div class="line">		&lt;!-- https://mvnrepository.com/artifact/com.alibaba/fastjson --&gt;</div><div class="line">		&lt;dependency&gt;</div><div class="line">			&lt;groupId&gt;com.alibaba&lt;/groupId&gt;</div><div class="line">			&lt;artifactId&gt;fastjson&lt;/artifactId&gt;</div><div class="line">			&lt;version&gt;1.2.31&lt;/version&gt;</div><div class="line">		&lt;/dependency&gt;</div><div class="line">		&lt;dependency&gt;</div><div class="line">			&lt;groupId&gt;org.projectlombok&lt;/groupId&gt;</div><div class="line">			&lt;artifactId&gt;lombok&lt;/artifactId&gt;</div><div class="line">		&lt;/dependency&gt;</div><div class="line"></div><div class="line">		&lt;dependency&gt;</div><div class="line">			&lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;</div><div class="line">			&lt;artifactId&gt;spring-boot-starter-test&lt;/artifactId&gt;</div><div class="line">			&lt;scope&gt;test&lt;/scope&gt;</div><div class="line">		&lt;/dependency&gt;</div><div class="line">	&lt;/dependencies&gt;</div></pre></td></tr></table></figure></p>
+<p>主要是spring-boot-starter-web，因为是一个web项目所以是必须的。<br>其次是fastjson，主要是用于Json数据的转换处理。<br>另一个lombok，是我比较喜欢用的一个库，基本是每个项目必备，它能让我写代码更加简洁和方便，提高效率，这里也强烈推荐给大家，具体的使用和介绍，可以自行Google了解。</p>
+<img src="/2017/11/17/SpringBoot消费BmobAPI/project.png" alt="This is an project image" title="This is an project image">
+<h3 id="编写Config类"><a href="#编写Config类" class="headerlink" title="编写Config类"></a>编写Config类</h3><p>工程的基本结构如上图所示，在基础的SpringBoot项目上新建了DemoConfig.java、DemoController.java两个类，接下来一一介绍，首先是DemoConfig.java类。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">package tech.googol.demo;</div><div class="line"></div><div class="line">import org.springframework.context.annotation.Bean;</div><div class="line">import org.springframework.context.annotation.Configuration;</div><div class="line">import org.springframework.web.client.RestTemplate;</div><div class="line"></div><div class="line">@Configuration</div><div class="line">public class DemoConfig &#123;</div><div class="line"></div><div class="line">    @Bean</div><div class="line">    public RestTemplate restTemplate()&#123;</div><div class="line">        return new RestTemplate();</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>使用@Configuration注解标识DemoConfig类是一个配置类，SpringBoot会自动处理此标识下的相关配置，其中我们使用@Bean注解在restTemplate方法上，表示将该方法返回的RestTemplate实例交由Spring上下文管理，这样就可以在需要使用RestTemplate的地方通过@Autowired注解来调用这个实例进行使用了。</p>
+<h3 id="编写Controller类"><a href="#编写Controller类" class="headerlink" title="编写Controller类"></a>编写Controller类</h3><p>下面就看看怎么在DemoController类中使用RestTemplate对象来调用BmobRestfulAPI吧。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div></pre></td><td class="code"><pre><div class="line">package tech.googol.demo;</div><div class="line"></div><div class="line">import com.alibaba.fastjson.JSONObject;</div><div class="line">import lombok.extern.slf4j.Slf4j;</div><div class="line">import org.springframework.beans.factory.annotation.Autowired;</div><div class="line">import org.springframework.http.*;</div><div class="line">import org.springframework.web.bind.annotation.GetMapping;</div><div class="line">import org.springframework.web.bind.annotation.RestController;</div><div class="line">import org.springframework.web.client.RestTemplate;</div><div class="line"></div><div class="line">@Slf4j</div><div class="line">@RestController</div><div class="line">public class DemoController &#123;</div><div class="line">    @Autowired</div><div class="line">    private RestTemplate restTemplate;</div><div class="line">	//Bmob获取服务器时间的接口地址</div><div class="line">    String url = &quot;https://api.bmob.cn/1/timestamp&quot;;</div><div class="line"></div><div class="line">    @GetMapping(&quot;/time&quot;)</div><div class="line">    public ResponseEntity getServiceTime()&#123;</div><div class="line">        HttpHeaders headers = new HttpHeaders();</div><div class="line">        MediaType type = MediaType.parseMediaType(&quot;application/json; charset=UTF-8&quot;);</div><div class="line">        headers.setContentType(type);</div><div class="line">        headers.add(&quot;X-Bmob-Application-Id&quot;, &quot;4b5f22926******312c2f1e027c4071e&quot;);</div><div class="line">        headers.add(&quot;X-Bmob-REST-API-Key&quot;, &quot;4af231ed9******bcb9ab847af29a7f4&quot;);</div><div class="line">        HttpEntity&lt;Object&gt; requestEntity = new HttpEntity&lt;Object&gt;(headers);</div><div class="line">        ResponseEntity&lt;JSONObject&gt; result = restTemplate.exchange(url, HttpMethod.GET, requestEntity, JSONObject.class);</div><div class="line">        return result;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>这里先简单的用一个方法来调用Bmob的获取服务器时间的接口，如果能正常返回服务器时间，那么则表示调用Bmob服务接口是成功的。</p>
+<p>@RestController注解是Spring4之后新加入的注解，它是@ResponseBody和@Controller的组合注解。因为只是为了做一个RestfulAPI项目，不是普通的Web项目，不需要做视图页面的跳转，所以直接使用@RestController，而不使用@Controller。</p>
+<p>@Autowired注解自动装配RestTemplate对象到DemoController类中以供使用。</p>
+<p>@GetMapping注解也是Spring4引入的一个组合注解，它是@RequestMapping(method = RequestMethod.GET)的缩写。@GetMapping(“/time”)表示提供一个GET请求方式的”/time”接口，该接口具体的实现在getServiceTime()方法中完成。</p>
+<p>在这里我们在getServiceTime()方法中使用restTemplate对象调用了Bmob的获取服务器时间接口（<a href="https://api.bmob.cn/1/timestamp），并将接口返回的数据直接return出去,也就是作为&quot;/time&quot;接口的数据返回。" target="_blank" rel="external">https://api.bmob.cn/1/timestamp），并将接口返回的数据直接return出去,也就是作为&quot;/time&quot;接口的数据返回。</a></p>
+<h3 id="RestTemplate的使用"><a href="#RestTemplate的使用" class="headerlink" title="RestTemplate的使用"></a>RestTemplate的使用</h3><p>这里重点讲一下RestTemplate请求BmobApi的部分。<br>使用的是RestTemplate对象的exchange方法来发起一次Http请求，第一个参数是请求的接口地址，第二个参数是Http请求的方式HttpMethod.GET，第三个参数是本次请求所传入的参数，这里是将接口所需的Header参数通过添加到HttpEntity对象中进行传入的，第四个参数是本次请求response返回数据的封装格式，这里是封装成JsonObject对象进行返回。</p>
+<h3 id="简单封装一下"><a href="#简单封装一下" class="headerlink" title="简单封装一下"></a>简单封装一下</h3><p>上面只是为了快速检验一下能否正常请求和响应数据，所以所有的事情都在一个方法中解决了。这也是绝大多数程序员在开发过程中经常会做的事情，为了验证一个想法是否可行，会先以简单快速的方法去实践，确认可行后再展开更加详细的架构设计。<br>这里我们就一步一步来，先将getServiceTime方法的实现进行拆分一下，尽量达到代码的可重用性，因为调用任何BmobRestfulAPI时，Header中都必须传递两个参数X-Bmob-Application-Id、X-Bmob-REST-API-Key,并且需要制定Content-Type为”application/json”,所以我们可以先将这部分的代码单独拿出来在另一个方法中实现，暂且命名为generateRequestEntity方法,并重载一个无参的，以方便在请求BmobRestfulAPI时需要在body中传递参数和不需要传参的情形进行使用。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line">private HttpEntity generateRequestEntity()&#123;</div><div class="line">	return generateRequestEntity(null);</div><div class="line">&#125;</div><div class="line"></div><div class="line">private HttpEntity generateRequestEntity(Object bodyData)&#123;</div><div class="line">  HttpHeaders headers = new HttpHeaders();</div><div class="line">  MediaType type = MediaType.parseMediaType(&quot;application/json; charset=UTF-8&quot;);</div><div class="line">  headers.setContentType(type);</div><div class="line">  headers.add(&quot;X-Bmob-Application-Id&quot;, &quot;4b5f22926******312c2f1e027c4071e&quot;);</div><div class="line">  headers.add(&quot;X-Bmob-REST-API-Key&quot;, &quot;4af231ed9******bcb9ab847af29a7f4&quot;);</div><div class="line">  HttpEntity&lt;Object&gt; requestEntity;</div><div class="line">  if(null != bodyData)&#123;</div><div class="line">  	requestEntity = new HttpEntity&lt;Object&gt;(bodyData, headers);</div><div class="line">  &#125;else&#123;</div><div class="line">  	requestEntity = new HttpEntity&lt;Object&gt;(headers);</div><div class="line">  &#125;</div><div class="line">  return requestEntity;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<h3 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h3><p>启动SpringBoot项目，在浏览器直接访问<a href="http://localhost:8080/time接口，以Json格式返回Bmob服务器时间。下图为IDEA中使用REST" target="_blank" rel="external">http://localhost:8080/time接口，以Json格式返回Bmob服务器时间。下图为IDEA中使用REST</a> Client访问返回的结果：</p>
+<img src="/2017/11/17/SpringBoot消费BmobAPI/test.png" alt="This is an test image" title="This is an test image">
+<hr>
+<ul>
+<li>本博客所有文章除特别声明外，均采用<a href="https://creativecommons.org/licenses/by-nc-nd/4.0/deed.zh" target="_blank" rel="external">CC-BY-NC-SA 4.0 许可协议</a>进行许可</li>
+<li>欢迎转载，但请注明来自<a href="http://www.googol.tech/">稻草人</a>，并保持转载后文章内容的完整，本人保留所有版权相关权利。</li>
+</ul>
+<p>本文链接：<a href="http://www.googol.tech/2017/11/17/SpringBoot消费BmobAPI/">http://www.googol.tech/2017/11/17/SpringBoot消费BmobAPI/</a></p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;在大部分的情况下，使用客户端开发时调用Bmob的服务是比较常见的，比如开发Android、iOS应用程序等等。这样做能够直接省去服务端开发该做的事情，一方面降低了开发成本，另一方面也提高了客户端开发的速度，对于开发人员来说真的是一树百获啊。&lt;/p&gt;
+&lt;p&gt;上面说的这些大家不
+    
+    </summary>
+    
+    
+  </entry>
   
   <entry>
     <title>CentOS 7系统安装</title>
@@ -51,7 +96,14 @@
 <li><p>即时生效</p>
 </li>
 </ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">setenforce 0</div></pre></td></tr></table></figure>]]></content>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">setenforce 0</div></pre></td></tr></table></figure>
+<hr>
+<ul>
+<li>本博客所有文章除特别声明外，均采用<a href="https://creativecommons.org/licenses/by-nc-nd/4.0/deed.zh" target="_blank" rel="external">CC-BY-NC-SA 4.0 许可协议</a>进行许可</li>
+<li>欢迎转载，但请注明来自<a href="http://www.googol.tech/">稻草人</a>，并保持转载后文章内容的完整，本人保留所有版权相关权利。</li>
+</ul>
+<p>本文链接：<a href="http://www.googol.tech/2017/11/16/CentOS-7系统安装/">http://www.googol.tech/2017/11/16/CentOS-7系统安装/</a></p>
+]]></content>
     
     <summary type="html">
     
@@ -80,6 +132,12 @@
 <h3 id="启动-停止"><a href="#启动-停止" class="headerlink" title="启动/停止"></a>启动/停止</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">sudo service jenkins start/stop/restart</div><div class="line">sudo chkconfig jenkins on</div></pre></td></tr></table></figure>
 <p>查看jenkins状态<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">systemctl status jenkins</div></pre></td></tr></table></figure></p>
 <h3 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h3><p>将jenkins用户添加进docker用户组<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">sudo usermod -aG docker jenkins</div><div class="line">sudo systemctl restart jenkins</div></pre></td></tr></table></figure></p>
+<hr>
+<ul>
+<li>本博客所有文章除特别声明外，均采用<a href="https://creativecommons.org/licenses/by-nc-nd/4.0/deed.zh" target="_blank" rel="external">CC-BY-NC-SA 4.0 许可协议</a>进行许可</li>
+<li>欢迎转载，但请注明来自<a href="http://www.googol.tech/">稻草人</a>，并保持转载后文章内容的完整，本人保留所有版权相关权利。</li>
+</ul>
+<p>本文链接：<a href="http://www.googol.tech/2017/11/16/CentOS-7安装Jenkins/">http://www.googol.tech/2017/11/16/CentOS-7安装Jenkins/</a></p>
 ]]></content>
     
     <summary type="html">
@@ -117,6 +175,12 @@
 <h3 id="卸载Docker-CE"><a href="#卸载Docker-CE" class="headerlink" title="卸载Docker CE"></a>卸载Docker CE</h3><p>1.<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo yum remove docker-ce</div></pre></td></tr></table></figure></p>
 <p>Note：镜像，容器，卷和配置文件不是被自动移除的，需要手动删除</p>
 <p>2.删除所有的配置<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo rm -rf /var/lib/docker</div></pre></td></tr></table></figure></p>
+<hr>
+<ul>
+<li>本博客所有文章除特别声明外，均采用<a href="https://creativecommons.org/licenses/by-nc-nd/4.0/deed.zh" target="_blank" rel="external">CC-BY-NC-SA 4.0 许可协议</a>进行许可</li>
+<li>欢迎转载，但请注明来自<a href="http://www.googol.tech/">稻草人</a>，并保持转载后文章内容的完整，本人保留所有版权相关权利。</li>
+</ul>
+<p>本文链接：<a href="http://www.googol.tech/2017/11/16/CentOS-7安装Docker/">http://www.googol.tech/2017/11/16/CentOS-7安装Docker/</a></p>
 ]]></content>
     
     <summary type="html">
@@ -142,7 +206,14 @@
     <content type="html"><![CDATA[<h3 id="yum-方式安装JDK"><a href="#yum-方式安装JDK" class="headerlink" title="yum 方式安装JDK"></a>yum 方式安装JDK</h3><h4 id="1-首先查看JDK软件包列表"><a href="#1-首先查看JDK软件包列表" class="headerlink" title="1.首先查看JDK软件包列表"></a>1.首先查看JDK软件包列表</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div></pre></td><td class="code"><pre><div class="line">yum search java | grep -i --color JDK</div><div class="line"></div><div class="line">ldapjdk-javadoc.noarch : Javadoc for ldapjdk</div><div class="line">icedtea-web.x86_64 : Additional Java components for OpenJDK - Java browser</div><div class="line">java-1.6.0-openjdk.x86_64 : OpenJDK Runtime Environment</div><div class="line">java-1.6.0-openjdk-demo.x86_64 : OpenJDK Demos</div><div class="line">java-1.6.0-openjdk-devel.x86_64 : OpenJDK Development Environment</div><div class="line">java-1.6.0-openjdk-javadoc.x86_64 : OpenJDK API Documentation</div><div class="line">java-1.6.0-openjdk-src.x86_64 : OpenJDK Source Bundle</div><div class="line">java-1.7.0-openjdk.x86_64 : OpenJDK Runtime Environment</div><div class="line">java-1.7.0-openjdk-accessibility.x86_64 : OpenJDK accessibility connector</div><div class="line">java-1.7.0-openjdk-demo.x86_64 : OpenJDK Demos</div><div class="line">java-1.7.0-openjdk-devel.x86_64 : OpenJDK Development Environment</div><div class="line">java-1.7.0-openjdk-headless.x86_64 : The OpenJDK runtime environment without</div><div class="line">java-1.7.0-openjdk-javadoc.noarch : OpenJDK API Documentation</div><div class="line">java-1.7.0-openjdk-src.x86_64 : OpenJDK Source Bundle</div><div class="line">java-1.8.0-openjdk.i686 : OpenJDK Runtime Environment</div><div class="line">java-1.8.0-openjdk.x86_64 : OpenJDK Runtime Environment</div><div class="line">java-1.8.0-openjdk-accessibility.i686 : OpenJDK accessibility connector</div><div class="line">java-1.8.0-openjdk-accessibility.x86_64 : OpenJDK accessibility connector</div><div class="line">java-1.8.0-openjdk-accessibility-debug.i686 : OpenJDK accessibility connector</div><div class="line">java-1.8.0-openjdk-accessibility-debug.x86_64 : OpenJDK accessibility connector</div><div class="line">java-1.8.0-openjdk-debug.i686 : OpenJDK Runtime Environment with full debug on</div><div class="line">java-1.8.0-openjdk-debug.x86_64 : OpenJDK Runtime Environment with full debug on</div><div class="line">java-1.8.0-openjdk-demo.i686 : OpenJDK Demos</div><div class="line">java-1.8.0-openjdk-demo.x86_64 : OpenJDK Demos</div><div class="line">java-1.8.0-openjdk-demo-debug.i686 : OpenJDK Demos with full debug on</div><div class="line">java-1.8.0-openjdk-demo-debug.x86_64 : OpenJDK Demos with full debug on</div><div class="line">java-1.8.0-openjdk-devel.i686 : OpenJDK Development Environment</div><div class="line">java-1.8.0-openjdk-devel.x86_64 : OpenJDK Development Environment</div><div class="line">java-1.8.0-openjdk-devel-debug.i686 : OpenJDK Development Environment with full</div><div class="line">java-1.8.0-openjdk-devel-debug.x86_64 : OpenJDK Development Environment with</div><div class="line">java-1.8.0-openjdk-headless.i686 : OpenJDK Runtime Environment</div><div class="line">java-1.8.0-openjdk-headless.x86_64 : OpenJDK Runtime Environment</div><div class="line">java-1.8.0-openjdk-headless-debug.i686 : OpenJDK Runtime Environment with full</div><div class="line">java-1.8.0-openjdk-headless-debug.x86_64 : OpenJDK Runtime Environment with full</div><div class="line">java-1.8.0-openjdk-javadoc.noarch : OpenJDK API Documentation</div><div class="line">java-1.8.0-openjdk-javadoc-debug.noarch : OpenJDK API Documentation for packages</div><div class="line">java-1.8.0-openjdk-javadoc-zip.noarch : OpenJDK API Documentation compressed in</div><div class="line">java-1.8.0-openjdk-javadoc-zip-debug.noarch : OpenJDK API Documentation</div><div class="line">java-1.8.0-openjdk-src.i686 : OpenJDK Source Bundle</div><div class="line">java-1.8.0-openjdk-src.x86_64 : OpenJDK Source Bundle</div><div class="line">java-1.8.0-openjdk-src-debug.i686 : OpenJDK Source Bundle for packages with</div><div class="line">java-1.8.0-openjdk-src-debug.x86_64 : OpenJDK Source Bundle for packages with</div><div class="line">ldapjdk.noarch : The Mozilla LDAP Java SDK</div></pre></td></tr></table></figure>
 <p>然后选择需要的版本安装，这里我选择java-1.8.0-openjdk.x86_64进行安装</p>
 <h4 id="2-安装"><a href="#2-安装" class="headerlink" title="2.安装"></a>2.安装</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">yum install java-1.8.0-openjdk.x86_64</div><div class="line">yum install java-1.8.0-openjdk-devel.x86_64</div></pre></td></tr></table></figure>
-<h4 id="3-验证验证是否成功"><a href="#3-验证验证是否成功" class="headerlink" title="3.验证验证是否成功"></a>3.验证验证是否成功</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">java -version</div><div class="line"></div><div class="line">openjdk version &quot;1.8.0_144&quot;</div><div class="line">OpenJDK Runtime Environment (build 1.8.0_144-b01)</div><div class="line">OpenJDK 64-Bit Server VM (build 25.144-b01, mixed mode)</div></pre></td></tr></table></figure>]]></content>
+<h4 id="3-验证验证是否成功"><a href="#3-验证验证是否成功" class="headerlink" title="3.验证验证是否成功"></a>3.验证验证是否成功</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">java -version</div><div class="line"></div><div class="line">openjdk version &quot;1.8.0_144&quot;</div><div class="line">OpenJDK Runtime Environment (build 1.8.0_144-b01)</div><div class="line">OpenJDK 64-Bit Server VM (build 25.144-b01, mixed mode)</div></pre></td></tr></table></figure>
+<hr>
+<ul>
+<li>本博客所有文章除特别声明外，均采用<a href="https://creativecommons.org/licenses/by-nc-nd/4.0/deed.zh" target="_blank" rel="external">CC-BY-NC-SA 4.0 许可协议</a>进行许可</li>
+<li>欢迎转载，但请注明来自<a href="http://www.googol.tech/">稻草人</a>，并保持转载后文章内容的完整，本人保留所有版权相关权利。</li>
+</ul>
+<p>本文链接：<a href="http://www.googol.tech/2017/11/16/CentOS-7安装JDK/">http://www.googol.tech/2017/11/16/CentOS-7安装JDK/</a></p>
+]]></content>
     
     <summary type="html">
     
@@ -173,6 +244,12 @@
 <p>将registry容器运行起来，再push就可以成功了</p>
 <h3 id="测试从本地仓库中拉取镜像"><a href="#测试从本地仓库中拉取镜像" class="headerlink" title="测试从本地仓库中拉取镜像"></a>测试从本地仓库中拉取镜像</h3><p>1.先将本机中的busybox镜像和192.168.1.13:5000/busybox镜像删除</p>
 <p>2.拉取镜像<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">docker pull 192.168.1.13:5000/busybox</div></pre></td></tr></table></figure></p>
+<hr>
+<ul>
+<li>本博客所有文章除特别声明外，均采用<a href="https://creativecommons.org/licenses/by-nc-nd/4.0/deed.zh" target="_blank" rel="external">CC-BY-NC-SA 4.0 许可协议</a>进行许可</li>
+<li>欢迎转载，但请注明来自<a href="http://www.googol.tech/">稻草人</a>，并保持转载后文章内容的完整，本人保留所有版权相关权利。</li>
+</ul>
+<p>本文链接：<a href="http://www.googol.tech/2017/11/16/Docker搭建本地镜像仓库/">http://www.googol.tech/2017/11/16/Docker搭建本地镜像仓库/</a></p>
 ]]></content>
     
     <summary type="html">
@@ -236,6 +313,12 @@
 <h3 id="3-重启docker服务"><a href="#3-重启docker服务" class="headerlink" title="3. 重启docker服务"></a>3. 重启docker服务</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">sudo systemctl daemon-reload</div><div class="line">sudo systemctl restart docker</div></pre></td></tr></table></figure>
 <p>查看docker是否有了flannel的网络。<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo ps -ef | grep docker</div></pre></td></tr></table></figure></p>
 <h2 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h2><p>启动各服务的统一脚本<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">for SERVICES in flanneld kube-proxy kubelet docker;</div><div class="line">do</div><div class="line">sudo systemctl daemon-reload</div><div class="line">sudo systemctl restart $SERVICES</div><div class="line">sudo systemctl enable $SERVICES</div><div class="line">sudo systemctl status $SERVICES</div><div class="line">done</div></pre></td></tr></table></figure></p>
+<hr>
+<ul>
+<li>本博客所有文章除特别声明外，均采用<a href="https://creativecommons.org/licenses/by-nc-nd/4.0/deed.zh" target="_blank" rel="external">CC-BY-NC-SA 4.0 许可协议</a>进行许可</li>
+<li>欢迎转载，但请注明来自<a href="http://www.googol.tech/">稻草人</a>，并保持转载后文章内容的完整，本人保留所有版权相关权利。</li>
+</ul>
+<p>本文链接：<a href="http://www.googol.tech/2017/08/23/Kubernetes-Node-安装与配置-Ubuntu系统/">http://www.googol.tech/2017/08/23/Kubernetes-Node-安装与配置-Ubuntu系统/</a></p>
 ]]></content>
     
     <summary type="html">
@@ -267,7 +350,14 @@
 <p>只需要在这里面加入来标示开启文章目录功能，这样在博客显示的时候，会自动列出文章的目录。</p>
 <h2 id="开启RSS订阅功能"><a href="#开启RSS订阅功能" class="headerlink" title="开启RSS订阅功能"></a>开启RSS订阅功能</h2><h3 id="1-首先安装-hexo-generator-feed"><a href="#1-首先安装-hexo-generator-feed" class="headerlink" title="1. 首先安装 hexo-generator-feed"></a>1. 首先安装 hexo-generator-feed</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">npm install hexo-generator-feed --save</div></pre></td></tr></table></figure>
 <h3 id="2-配置Hexo根目录-config-yml，配置RSS订阅"><a href="#2-配置Hexo根目录-config-yml，配置RSS订阅" class="headerlink" title="2. 配置Hexo根目录_config.yml，配置RSS订阅"></a>2. 配置Hexo根目录_config.yml，配置RSS订阅</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">plugin:</div><div class="line">  - hexo-generator-feed</div><div class="line"><span class="meta">#</span>Feed Atom</div><div class="line">feed:</div><div class="line">  type: atom</div><div class="line">  path: atom.xml</div><div class="line">  limit: 20</div></pre></td></tr></table></figure>
-<h2 id="使用Hexo-admin管理博客"><a href="#使用Hexo-admin管理博客" class="headerlink" title="使用Hexo-admin管理博客"></a>使用Hexo-admin管理博客</h2><h3 id="安装Hexo-admin"><a href="#安装Hexo-admin" class="headerlink" title="安装Hexo-admin"></a>安装Hexo-admin</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">npm install --save hexo-admin</div><div class="line">hexo server -d</div></pre></td></tr></table></figure>]]></content>
+<h2 id="使用Hexo-admin管理博客"><a href="#使用Hexo-admin管理博客" class="headerlink" title="使用Hexo-admin管理博客"></a>使用Hexo-admin管理博客</h2><h3 id="安装Hexo-admin"><a href="#安装Hexo-admin" class="headerlink" title="安装Hexo-admin"></a>安装Hexo-admin</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">npm install --save hexo-admin</div><div class="line">hexo server -d</div></pre></td></tr></table></figure>
+<hr>
+<ul>
+<li>本博客所有文章除特别声明外，均采用<a href="https://creativecommons.org/licenses/by-nc-nd/4.0/deed.zh" target="_blank" rel="external">CC-BY-NC-SA 4.0 许可协议</a>进行许可</li>
+<li>欢迎转载，但请注明来自<a href="http://www.googol.tech/">稻草人</a>，并保持转载后文章内容的完整，本人保留所有版权相关权利。</li>
+</ul>
+<p>本文链接：<a href="http://www.googol.tech/2017/08/22/GitHub">http://www.googol.tech/2017/08/22/GitHub</a> Pages+Hexo搭建博客/</p>
+]]></content>
     
     <summary type="html">
     
