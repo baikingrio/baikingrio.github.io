@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://www.googol.tech/"/>
-  <updated>2017-11-20T08:51:36.198Z</updated>
+  <updated>2017-11-24T08:15:39.125Z</updated>
   <id>http://www.googol.tech/</id>
   
   <author>
@@ -20,12 +20,12 @@
     <link href="http://www.googol.tech/2017/11/17/SpringBoot%E6%B6%88%E8%B4%B9BmobAPI/"/>
     <id>http://www.googol.tech/2017/11/17/SpringBoot消费BmobAPI/</id>
     <published>2017-11-17T02:51:00.000Z</published>
-    <updated>2017-11-20T08:51:36.198Z</updated>
+    <updated>2017-11-24T08:15:39.125Z</updated>
     
     <content type="html"><![CDATA[<p>在大部分的情况下，使用客户端开发时调用Bmob的服务是比较常见的，比如开发Android、iOS应用程序等等。这样做能够直接省去服务端开发该做的事情，一方面降低了开发成本，另一方面也提高了客户端开发的速度，对于开发人员来说真的是一树百获啊。</p>
 <p>上面说的这些大家不要认为是在打广告或是写软文，其实纯粹就是一个普通使用者对一个产品使用后的真实感受的表达，如果你非要这样认为，就怪程序员不太会用社会语言写文章吧。好了，还是少解释，咱们坐下来开始聊代码吧。</p>
 <h3 id="使用到的资源"><a href="#使用到的资源" class="headerlink" title="使用到的资源"></a>使用到的资源</h3><ul>
-<li>BmobRestfulAPI文档<br><a href="BmobRestfulAPI文档">https://docs.bmob.cn/data/Restful/b_developdoc/doc/index.html</a></li>
+<li>BmobRestfulAPI文档<br><a href="https://docs.bmob.cn/data/Restful/b_developdoc/doc/index.html" target="_blank" rel="external">BmobRestfulAPI文档</a></li>
 </ul>
 <h3 id="SpringBoot项目"><a href="#SpringBoot项目" class="headerlink" title="SpringBoot项目"></a>SpringBoot项目</h3><p>本来是想从创建SpringBoot项目开始讲的，想想还是算了(主要是懒)，因为基本都是IDEA的步骤说明，都是截图，其实都不是这篇文章的重点。所以，这里就主要说明一下项目所使用的类库有哪些，项目是由maven构建的，pom.xml文件中dependencies部分具体配置如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line">&lt;dependencies&gt;</div><div class="line">  &lt;dependency&gt;</div><div class="line">    &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;</div><div class="line">    &lt;artifactId&gt;spring-boot-starter-web&lt;/artifactId&gt;</div><div class="line">  &lt;/dependency&gt;</div><div class="line">  &lt;!-- https://mvnrepository.com/artifact/com.alibaba/fastjson --&gt;</div><div class="line">  &lt;dependency&gt;</div><div class="line">    &lt;groupId&gt;com.alibaba&lt;/groupId&gt;</div><div class="line">    &lt;artifactId&gt;fastjson&lt;/artifactId&gt;</div><div class="line">    &lt;version&gt;1.2.31&lt;/version&gt;</div><div class="line">  &lt;/dependency&gt;</div><div class="line">  &lt;dependency&gt;</div><div class="line">    &lt;groupId&gt;org.projectlombok&lt;/groupId&gt;</div><div class="line">    &lt;artifactId&gt;lombok&lt;/artifactId&gt;</div><div class="line">  &lt;/dependency&gt;</div><div class="line"></div><div class="line">  &lt;dependency&gt;</div><div class="line">    &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;</div><div class="line">    &lt;artifactId&gt;spring-boot-starter-test&lt;/artifactId&gt;</div><div class="line">    &lt;scope&gt;test&lt;/scope&gt;</div><div class="line">  &lt;/dependency&gt;</div><div class="line">&lt;/dependencies&gt;</div></pre></td></tr></table></figure></p>
 <p>主要是spring-boot-starter-web，因为是一个web项目所以是必须的。<br>其次是fastjson，主要是用于Json数据的转换处理。<br>另一个lombok，是我比较喜欢用的一个库，基本是每个项目必备，它能让我写代码更加简洁和方便，提高效率，这里也强烈推荐给大家，具体的使用和介绍，可以自行Google了解。</p>
